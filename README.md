@@ -30,12 +30,6 @@ The app also includes a basic traffic counter using `localStorage`.
 
 ---
 
-## 📷 Screenshots
-### Main Interface
-![QR Code Generator Screenshot](https://i.ibb.co/pJkP8Lk/qr-generator-preview.png)
-
----
-
 ## 📦 Setup & Usage
 
 Clone the repository:
