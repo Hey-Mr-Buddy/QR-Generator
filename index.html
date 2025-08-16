@@ -17,8 +17,8 @@
     <input id="linkInput" type="text" placeholder="https://example.com" 
            class="w-full px-3 py-2 border rounded-lg mb-4 focus:outline-none focus:ring focus:border-blue-300">
 
-    <!-- Image Input -->
-    <label class="block mb-2 font-medium">Upload Image</label>
+    <!-- Image Input (optional) -->
+    <label class="block mb-2 font-medium">Upload Image (Optional)</label>
     <input id="imageInput" type="file" accept="image/*"
            class="w-full mb-4">
 
@@ -36,6 +36,10 @@
             class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition mt-4 hidden">
         Download QR Code
     </button>
+
+    <p id="traffic-counter">
+      Total Visits: <span class="traffic-number">12345</span>
+    </p>
   </div>
 
   <script>
@@ -64,6 +68,8 @@
     const downloadBtn = document.getElementById("downloadBtn");
     const qrContainer = document.getElementById("qrContainer");
 
+    const trafficCounter = document.getElementById("traffic-counter");
+
     generateBtn.addEventListener("click", () => {
       const link = linkInput.value.trim();
       const file = imageInput.files[0];
@@ -72,18 +78,30 @@
         alert("Please enter a link.");
         return;
       }
-      if (!file) {
-        alert("Please upload an image.");
-        return;
-      }
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const imageDataUrl = e.target.result;
+      if (file) {
+        // If image is uploaded → read it and use
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imageDataUrl = e.target.result;
 
+          qrCode.update({
+            data: link,
+            image: imageDataUrl
+          });
+
+          qrContainer.innerHTML = "";
+          qrCode.append(qrContainer);
+
+          // Show download button
+          downloadBtn.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // If no image uploaded → generate QR with only link
         qrCode.update({
           data: link,
-          image: imageDataUrl
+          image: "" // No image
         });
 
         qrContainer.innerHTML = "";
@@ -91,14 +109,23 @@
 
         // Show download button
         downloadBtn.classList.remove("hidden");
-      };
-      reader.readAsDataURL(file);
+      }
     });
 
     // Download QR code as PNG
     downloadBtn.addEventListener("click", () => {
       qrCode.download({ name: "my-qr-code", extension: "png" });
     });
+
+    // Initialize and display traffic count using the existing HTML element
+    const initializeTrafficCount = () => {
+      let trafficCount = parseInt(localStorage.getItem("trafficCount")) || 0; 
+      trafficCount++; 
+      localStorage.setItem("trafficCount", trafficCount); 
+      trafficCounter.textContent = `Total Traffic: ${trafficCount}`; 
+    };
+
+    initializeTrafficCount();
   </script>
 </body>
 </html>
